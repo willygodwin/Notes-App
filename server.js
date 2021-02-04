@@ -2,12 +2,18 @@
 
 const express = require('express');
 const path = require('path');
+const router = require('./routes/routes.js');
 
 // Sets up the Express App
 
-const app = express();
+const server = express();
 const PORT = 3000;
 
 // Sets up the Express app to handle data parsing
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+server.use(express.static(__dirname+'/public'));
+server.use(express.urlencoded({ extended: true }));
+server.use(express.json());
+server.use(router);
+
+
+server.listen(PORT,() => console.log(`Server is running on PORT:${PORT}`));
