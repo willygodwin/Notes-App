@@ -12,7 +12,7 @@
 
 
 ## Description
-The Notes Dashboard allows the user to save and delete notes they made need for daily tasks or ideas. The notes dashboard web app interacts with the backend to read and write a JSON file acting as the database. 
+The Notes Dashboard allows the user to save and delete notes they may need for daily tasks or ideas. The notes dashboard web app interacts with the backend to read and write a JSON file storing the notes info (acting as the database). 
 
 
 ## Installation Instructions
