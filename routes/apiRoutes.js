@@ -6,7 +6,7 @@ const path = require('path');
 const jsonPath = path.join(__dirname,'..','db','db.json')
 
 
-
+//Function to retrieve and read the json file. 
 const getNotesFromDb = () => {
     return new Promise((resolve, reject) => {
         fs.readFile(jsonPath, 'utf8', (err, data) => {
@@ -22,7 +22,7 @@ const getNotesFromDb = () => {
     });
 }
 
-
+//Function to write a new JSON file to the database
 function writeToDb(data) {
     return new Promise((resolve, reject) => {
 
@@ -53,8 +53,6 @@ router.get('/api/notes', (req,res) => {
 
 //post 
 router.post('/api/notes', (req, res) => {
-    // req.body hosts is equal to the JSON post sent from the user
-    // This works because of our body parsing middleware
    
     req.body['id'] = nanoid();
 
