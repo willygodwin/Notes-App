@@ -3,42 +3,53 @@ const router = express.Router();
 const {nanoid} = require('nanoid');
 const fs = require('fs');
 const path = require('path');
-// validation to ensure if db.json file doesnt exist, the server will still works
-
-// run validation functions for database file db.json
-
-//define routes for API request
-//get
-// validation to ensure if db.json file doesnt exist, the server will still works
-let jsonData;
 const jsonPath = path.join(__dirname,'..','db','db.json')
-const fileExists = (file) => {
+
+
+
+const getNotesFromDb = () => {
     return new Promise((resolve, reject) => {
-        fs.readFile(file, 'utf8', (err, data) => {
+        fs.readFile(jsonPath, 'utf8', (err, data) => {
 
             if (err) {
                 reject(jsonData) ;
             } else{
             console.log(JSON.parse(data))
-            jsonData = JSON.parse(data)
-            resolve(jsonData);
+            resolve(JSON.parse(data));
+
             }});
   
     });
 }
-// run validation functions for database file db.json
-fileExists(jsonPath)
-.then((resp) => {
-    jsonData = resp
-    console.log(resp)
-})
-.catch(() => jsonData = []);
+
+
+function writeToDb(data) {
+    return new Promise((resolve, reject) => {
+
+        fs.writeFile(jsonPath, JSON.stringify(data), 'utf-8', (err) => {
+            if (err){
+                reject(err)
+            }else{
+                console.log('Successfully saved to database!');
+                resolve( true);
+            }
+        });
+    })
+}
+
 
 //define routes for API request
 router.get('/api/notes', (req,res) => {
-    res.json(jsonData);
-});
 
+    getNotesFromDb()
+        .then(notes => res.json(notes))
+        .catch( (err) =>  res.status(500).json({
+            error: err
+        }))
+        ;
+
+    
+});
 
 
 //post 
@@ -48,45 +59,30 @@ router.post('/api/notes', (req, res) => {
    
     req.body['id'] = nanoid();
 
-    //Making sure there are no duplicate id's
-    const duplicate = jsonData.find(ids => ids.id === req.body['id']); 
-    
-    if (duplicate === undefined){
-        
-    } else if (duplicate.id === req.body['id']) {
-        req.body['id'] = nanoid();
-    }
-    // console.log(req.body);
-    // console.log(db);
-    jsonData.push(req.body);
-    // console.log(db);
-    fs.writeFile(jsonPath, JSON.stringify(jsonData), 'utf-8', (err) => {
-        if (err){
-           throw console.log(`${err}: CANNOT saved to database`)
-        }else{
-            console.log('Successfully saved to database!');
-            res.json({success:true});
-        }
-    });
+    getNotesFromDb()
+    .then(notes => [...notes, req.body])
+    .then(newNotes => writeToDb(newNotes))
+    .then(isSuccess => res.json({success: isSuccess}))
+    .catch( (err) =>  res.status(500).json({
+        error: err
+    }))
+    ;
+
+   
 })
 
 //delete
 router.delete('/api/notes/:id', function (req, res) {
 
-    var id = req.params.id;
+    let id = req.params.id;
 
-    const newData = jsonData.filter((note) => note.id !== id);
-
-    console.log(newData);
-
-    fs.writeFile(jsonPath, JSON.stringify(newData), 'utf-8', (err) => {
-        if (err){
-           throw console.log(`${err}: CANNOT delete to database`)
-        }else{
-            console.log('Successfully deleted from database!');
-            res.json({success:true});
-        }
-    });
+    getNotesFromDb()
+    .then(notes => notes.filter((note) => note.id !== id))
+    .then(filteredNotes => writeToDb(filteredNotes))
+    .then(isSuccess => res.json({success: isSuccess}))
+    .catch( (err) =>  res.status(500).json({
+        error: err
+    }));
 
 
 })

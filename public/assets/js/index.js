@@ -59,6 +59,8 @@ const renderActiveNote = () => {
     noteTitle.value = activeNote.title;
     noteText.value = activeNote.text;
   } else {
+    noteTitle.removeAttribute('readonly');
+    noteText.removeAttribute('readonly');
     noteTitle.value = '';
     noteText.value = '';
   }
@@ -82,6 +84,7 @@ const handleNoteDelete = (e) => {
 
   const note = e.target;
   const noteId = JSON.parse(note.parentElement.getAttribute('data-note')).id;
+  console.log(noteId);
 
   if (activeNote.id === noteId) {
     activeNote = {};
@@ -96,7 +99,7 @@ const handleNoteDelete = (e) => {
 // Sets the activeNote and displays it
 const handleNoteView = (e) => {
   e.preventDefault();
-  activeNote = JSON.parse(e.target.parentElement.getAttribute('data-note'));
+  activeNote = JSON.parse(e.currentTarget.getAttribute('data-note'));
   renderActiveNote();
 };
 
@@ -107,7 +110,7 @@ const handleNewNoteView = (e) => {
 };
 
 const handleRenderSaveBtn = () => {
-  if (!noteTitle.value.trim() || !noteText.value.trim()) {
+  if (!noteTitle.value.trim() && !noteText.value.trim()) {
     hide(saveNoteBtn);
   } else {
     show(saveNoteBtn);
@@ -130,7 +133,7 @@ const renderNoteList = async (notes) => {
 
     const spanEl = document.createElement('span');
     spanEl.innerText = text;
-    spanEl.addEventListener('click', handleNoteView);
+    liEl.addEventListener('click', handleNoteView);
 
     liEl.append(spanEl);
 
@@ -161,9 +164,8 @@ const renderNoteList = async (notes) => {
 
     noteListItems.push(li);
   });
-
   if (window.location.pathname === '/notes') {
-    noteListItems.forEach((note) => noteList[0].append(note));
+    noteListItems.forEach((notes) => noteList[0].append(notes));
   }
 };
 
