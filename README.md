@@ -16,7 +16,7 @@ The Notes Dashboard allows the user to save and delete notes they may need for d
 
 
 ## Installation Instructions
-Visit the deployed URL at the bottom of the page or Github pages.
+Visit the deployed URL " https://notetaker-will.herokuapp.com/ "
 
 
 ## Usage Information 
